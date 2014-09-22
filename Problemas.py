@@ -204,6 +204,11 @@ class TravessiaPonte(Problem):
             for i in range(0,len(l),2):
                 h+= l[-(i+1)]
             
+            
+            #if segMenor not in l:
+                
+                
+            
             if len(l)>2:
                 idaEVoltaMenorDupla = menor+2*segMenor
                 tempoIdaMenorDupla = segMenor

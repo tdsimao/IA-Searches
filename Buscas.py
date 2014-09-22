@@ -18,9 +18,8 @@ class Node:
             self.depth = parent.depth+1
         else:
             self.depth = 0
-        
-        
-        
+    
+    
     def getPath(self):
         '''
             Retorna os filhos lista de nós desde a raiz ate a folha atual
@@ -68,15 +67,144 @@ def diff(listA, listB):
         else:
             for b in listB:
                 if a == b and a.cost < b.cost:
-                    print a, a.cost, a.f, a.h
-                    print a.parent
-                    print b, b.cost, b.f, b.h
-                    print b.parent
-                    print
+                    #print a, a.cost, a.f, a.h
+                    #print a.parent
+                    #print b, b.cost, b.f, b.h
+                    #print b.parent
+                    #print
                     #c.append(a) 
                     break            
     return c
             
+            
+class Search():
+    def __init__(self,p):
+        self.p  = p
+
+    def nextNode(self,node):
+        """
+            Deve retornar próximo nó a ser expandido
+            
+        """
+        raise NotImplementedError
+
+    def run(self):
+        """
+            Método principal que realiza a busca
+            Deve retornar Nó objetivo ou None em caso de falha
+            
+        """
+        raise NotImplementedError
+    
+    def addEdge():
+        """
+            Método para adicionar nós a borda
+            
+        """
+        raise NotImplementedError
+
+
+
+
+        
+class SearchUnformed(Search):
+    """
+        Classe para busca sem informação
+    """
+    def __init__(self,p):
+        Search.__init__(self,p)
+        
+
+    
+class BuscaLargura(SearchUnformed):
+    """
+        Classe de busca em Largura
+    """
+    
+    def __init__(self,p):
+        SearchUnformed.__init__(self,p)
+        self.edge = []
+        self.explored = set()
+        
+        
+    def nextNode(self,node):
+        """
+            Retornar próximo nó a ser expandido
+        """
+        return self.edge.pop(0)
+    
+    def pushEdge(self,node):
+        """
+            Adiciona node na borda
+        """
+        return self.edge.pop(0)
+    
+    
+    
+    def run(self):
+        """
+            Método principal que realiza a busca
+            Deve retornar Nó objetivo ou None em caso de falha
+        """
+        return buscaLargura(self.p)
+    
+        self.pushEdge(self.p.rootNode)
+        if self.p.isSolution(p.rootNode):
+            return self.p.rootNode,1,0
+        
+        
+        while True:
+        
+            
+            #se edge (borda) vazia não há resposta
+            if not self.edge:
+                return None,len(self.explored),len(self.explored)+len(self.edge)
+            #
+            
+            node = self.nextNode() #remove e retorna o primeiro no da borda
+            
+            
+            explored.add(node)
+            successors = p.successors(node)
+            
+            print(node)
+            if DEBUG:
+                print 'Nó'
+                print(node)
+            
+            #remove de sucessores os nós ja explorados
+            successors = diff(successors,explored)
+            
+            #remove de sucessores os nós da borda
+            successors = diff(successors,edge) 
+            
+                
+            #verifica se algum dos nós gerados é solução
+            for s in successors:
+                if p.isSolution(s):
+                    return s,len(explored),len(explored)+len(edge)
+            
+            # implementação da FILA
+            # insere novos sucessores no final caracterizando a busca em largura
+            edge += successors
+            
+            if DEBUG:
+                print 'Explorados'
+                for s in explored:
+                    print(s)
+                print
+                print 'Edge'
+                for s in edge:
+                    print(s)
+                print
+        
+
+
+
+
+    
+        
+
     
 def buscaLargura(p):
     '''retorna solução ou falha(None)'''
@@ -94,7 +222,6 @@ def buscaLargura(p):
         explored.add(node)
         successors = p.successors(node)
         
-        print(node)
         if DEBUG:
             print 'Nó'
             print(node)
@@ -132,7 +259,7 @@ def buscaProfundidade(p):
     edge.append(p.rootNode)
     explored = set()
     if p.isSolution(p.rootNode):
-        return p.rootNode,1,0
+        return p.rootNode,1,1
     while True:
         #se edge vazia não há resposta
         if not edge:
@@ -218,6 +345,31 @@ def bplRecursiva(node,p,limit):
             return 'FALHA',None,numNosExplorados,numNosGerados
             
         
+        
+def addABorda(successors,edge,explored):
+    """
+        adiciona nos a borda
+    """
+    for s in successors:
+        if s not in edge:
+            if s not in explored:
+                edge.append(s)
+        else:
+            aux = set()
+            aux.add(s)
+            b = aux.intersection(edge).pop() 
+            if s.cost < b.cost:
+                #print s, s.cost
+                #print b, b.cost
+                #print 
+                edge.remove(b)
+                edge.append(s)
+            
+            #if s.cost < (list(explored)+edge).getitem(s):
+                #print 'Teste'
+                
+
+
     
     
 def buscaCustoUniforme(p):
@@ -226,7 +378,7 @@ def buscaCustoUniforme(p):
     edge.append(p.rootNode)
     explored = set()
     if p.isSolution(p.rootNode):
-        return p.rootNode,1,0
+        return p.rootNode,1,1
     while True:
         #se edge (borda) vazia não há resposta
         if not edge:
@@ -237,11 +389,7 @@ def buscaCustoUniforme(p):
             print node
         explored.add(node)
         successors = p.successors(node)
-        
-        #remove de sucessores os nós ja explorados
-        successors = diff(successors,explored) 
-        #remove de sucessores os nós da borda
-        successors = diff(successors,edge) 
+        addABorda(successors,edge,explored)
         
         
         #verifica se algum dos nós gerados é solução
@@ -263,9 +411,8 @@ def buscaCustoUniforme(p):
                 print s,s.cost
             print
         
-        successors = sorted(successors, key=lambda s: s.cost)
-        
-        edge = sorted(itertools.chain(edge,successors), key=lambda n: n.cost)
+        #reordena borda
+        edge = sorted(edge, key=lambda n: n.cost)
         
         if DEBUG:
             print 'Sucessores ordenados:'
@@ -284,8 +431,6 @@ def buscaCustoUniforme(p):
     
            
         
-
-
     
 def buscaAStar(p):
     '''retorna solução ou falha(None)'''
@@ -293,7 +438,7 @@ def buscaAStar(p):
     edge.append(p.rootNode)
     explored = set()
     if p.isSolution(p.rootNode):
-        return p.rootNode,1,0
+        return p.rootNode,1,1
     while True:
         #se edge (borda) vazia não há resposta
         if not edge:
@@ -317,50 +462,10 @@ def buscaAStar(p):
         
         successors = p.successors(node)
         
-        for s in successors:
-            if s not in edge:
-                if s not in explored:
-                    edge.append(s)
-                else:
-                    aux = set()
-                    aux.add(s)
-                    b = aux.intersection(explored).pop()
-                    if s < b:
-                        print 'Teste',100*'-*'
-                        edge.append(s)
-                        
-                    
-            else:
-                aux = set()
-                aux.add(s)
-                b = aux.intersection(edge).pop()
-                if s.cost < b.cost:
-                    #print s, s.cost
-                    #print b, b.cost
-                    #print 
-                    edge.remove(s)
-                    edge.append(s)
+        addABorda(successors,edge,explored)
                 
-                #if s.cost < (list(explored)+edge).getitem(s):
-                    #print 'Teste'
-                
-
-        ##remove de sucessores os nós ja explorados
-        #successors = diff(successors,explored) 
-        ##remove de sucessores os nós da borda
-        #successors = diff(successors,edge) 
+        edge = sorted(edge, key=lambda n: n.f)
         
-        
-        # implementação da ordem de prioridade
-        # insere novos sucessores de forma ordenada segundo custo em edge
-        
-        
-        
-        #successors = sorted(successors, key=lambda s: s.f)
-        
-        
-        #edge = sorted(itertools.chain(edge,successors), key=lambda n: n.h+n.cost)
-        edge = sorted(edge, key=lambda n: n.h+n.cost)
         #edge += successors
         if DEBUG:
             print 'Edge posterior:'
@@ -383,7 +488,7 @@ def buscaGulosa(p):
     edge.append(p.rootNode)
     explored = set()
     if p.isSolution(p.rootNode):
-        return p.rootNode,len(explored),len(explored)+len(edge)
+        return p.rootNode,1,1
     while True:
         #se edge (borda) vazia não há resposta
         if not edge:
@@ -395,10 +500,13 @@ def buscaGulosa(p):
         explored.add(node)
         successors = p.successors(node)
         
-        #remove de sucessores os nós ja explorados
-        successors = diff(successors,explored) 
-        #remove de sucessores os nós da borda
-        successors = diff(successors,edge) 
+        
+        addABorda(successors,edge,explored)
+        
+        ##remove de sucessores os nós ja explorados
+        #successors = diff(successors,explored) 
+        ##remove de sucessores os nós da borda
+        #successors = diff(successors,edge) 
         
         
         #verifica se algum dos nós gerados é solução
@@ -409,10 +517,7 @@ def buscaGulosa(p):
         # implementação da ordem de prioridade
         # insere novos sucessores de forma ordenada segundo custo em edge
         
-        
-        
         successors = sorted(successors, key=lambda s: s.h)
-        
         
         edge = sorted(itertools.chain(edge,successors), key=lambda n: n.h)
         
@@ -450,36 +555,49 @@ def buscaIDAStar(p):
             Se f-limite = infinito então devolve falha
     """
     
-    
     numNosExplorados,numNosGerados = 0,1
     limit = p.rootNode.f
     node = p.rootNode
     
     def DFSContorno(node,p,limit):
+        global nextLimit 
         numNosExplorados,numNosGerados = 1,0
         
         #se nó esta fora do contorno
-        
         if node.f > limit:
+            #print limit, node.f
             return None,numNosExplorados,numNosGerados,node.f
         #se node é solução
         if p.isSolution(node):
             return node,numNosExplorados,numNosGerados,limit
         for sucessor in p.successors(node):
             numNosGerados += 1
-            solucao,numNosExploradosFilho,numNosGeradosFilho,newLimit = DFSContorno(sucessor,p,limit)
+            solucao, numNosExploradosFilho, numNosGeradosFilho, newLimit = DFSContorno(sucessor,p,limit)
             numNosExplorados += numNosExploradosFilho
             numNosGerados += numNosGeradosFilho
         
             if solucao != None:
-                return solucao,numNosExplorados,numNosGerados,newLimit
+                #return solucao,numNosExplorados,numNosGerados,newLimit
+                return solucao,numNosExplorados,numNosGerados,limit
             else:
-                global nextLimit 
-                nextLimit = min(nextLimit,newLimit)
-        return solucao,numNosExplorados,numNosGerados,newLimit
+                #print nextLimit
+                #if newLimit<nextLimit:
+                    #print nextLimit, newLimit
+                    #nextLimit = newLimit
+                if newLimit < nextLimit:
+                    print nextLimit,newLimit
+                    
+                    nextLimit = newLimit
+                #nextLimit = min(nextLimit,newLimit)
+                
+        #return solucao,numNosExplorados,numNosGerados,newLimit
+        return solucao,numNosExplorados,numNosGerados,nextLimit
     
     while True:
+        print 10*'-=-='
+        nextLimit = infinito
         solucao,numNosExploradosFilho,numNosGeradosFilho,limit = DFSContorno(p.rootNode,p,limit)
+        #return
         numNosExplorados += numNosExploradosFilho
         numNosGerados += numNosGeradosFilho
         if solucao != None:
@@ -502,8 +620,11 @@ def busca(p,tipo):
     
     #tipos = ['BL', 'BP', 'BPL', 'BPI', 'BCU', 'A*', 'IDA*','RBFS']
     
+    
     if tipo == 'BL':
-        return buscaLargura(p)
+        b = BuscaLargura(p)
+        return b.run()
+        #return buscaLargura(p)
     elif tipo == 'BP':
         return buscaProfundidade(p)
     elif tipo == 'BPL':
