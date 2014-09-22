@@ -1,0 +1,17 @@
+Teste com problema resolvido
+
+
+Repetição de valores no Problema da Travessia impede o uso de conjuntos para representar estados
+
+Definição de igualdade de estados: checa se estado e custo
+
+
+    
+#TODO
+    
+-Tentar encontrar teste sem solução
+
+-Pensar sobre:
+    Remoção de nós repetidos da lista de sucessores:
+    - Se nós iguais e com custo igual ou maior
+        nesse não seria necessário visitar esse nó
