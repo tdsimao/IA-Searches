@@ -443,6 +443,7 @@ def buscaCustoUniforme(p):
     
 def buscaAStar(p):
     '''retorna solução ou falha(None)'''
+    p.value(p.rootNode)
     edge = []
     edge.append(p.rootNode)
     explored = set()
@@ -470,6 +471,8 @@ def buscaAStar(p):
         #print node.cost, node.f, node
         
         successors = p.successors(node)
+        for s in successors:
+            p.value(s)
         
         addABorda(successors,edge,explored)
                 
@@ -493,6 +496,7 @@ def buscaAStar(p):
     
 def buscaGulosa(p):
     '''retorna solução ou falha(None)'''
+    p.value(p.rootNode)
     edge = []
     edge.append(p.rootNode)
     explored = set()
@@ -509,6 +513,8 @@ def buscaGulosa(p):
         explored.add(node)
         successors = p.successors(node)
         
+        for s in successors:
+            p.value(s)
         
         addABorda(successors,edge,explored)
         
@@ -562,6 +568,8 @@ def DFSContorno(node,p,limit):
     if p.isSolution(node):
         return node,limit
     successors = p.successors(node)
+    for s in successors:
+        p.value(s)
     numNosGerados += len(successors)
     for sucessor in successors:
         solucao, newLimit = DFSContorno(sucessor,p,limit)
@@ -598,11 +606,12 @@ def buscaIDAStar(p):
     numNosExplorados = 0
     numNosGerados = 1 #counting the rootNode
     
+    
+    p.value(p.rootNode)
     #initialize limit
     limit = p.rootNode.f
     node = p.rootNode
     while True:
-        print 10*'-=-='
         #nextLimit recebe o menor valor que ultrapassou o limite atual
         #so its important to initialize it as infinite before
         # in the end nextLimit will be the limit of the next call to DFSContorno

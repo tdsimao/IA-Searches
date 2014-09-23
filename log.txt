@@ -6,7 +6,7 @@ Repetição de valores no Problema da Travessia impede o uso de conjuntos para r
 Definição de igualdade de estados: checa se estado e custo
 
 
-BPI may have a b<1 because the rootNode is counted only once
+BPI and IDA* may have a b<1 because the rootNode is counted only once
 
     
 #TODO

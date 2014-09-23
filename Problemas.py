@@ -69,7 +69,6 @@ class ReguaPuzzle(Problem):
         
         
         self.rootNode.estado = {'left':aux[0],'right':aux[1]}
-        self.value(self.rootNode)
         
         
         
@@ -113,7 +112,6 @@ class ReguaPuzzle(Problem):
             estadoFilho['left'] = node.estado['left'][0:-i]+node.estado['left'][leftSize-i+1::]
             estadoFilho['right'] = node.estado['left'][-i]+node.estado['right']
         son = Node(parent = node, cost = node.cost+i, action = 'L'+str(i), estado = estadoFilho)
-        self.value(son)
         #print 'Avaliação filho:',son.f
         return son
     

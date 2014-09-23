@@ -8,7 +8,7 @@ echo saida salva em $nameFile
 tipos=(BL BP BPL BPI BCU A* IDA*)
 
 #echo "Array size: ${#array[*]}"
-echo "Tipo de Busca, Achou, Profundidade, Custo, Nós Explorados, Nós Gerados,Fator de Ramificação, Tempo (s), Entrada" > $nameFile 
+echo "Tipo de Busca, Achou, Profundidade, Custo, Nós Explorados, Nós Gerados, Fator de Ramificação, Tempo (s), Entrada" > $nameFile 
 for problem in $( ls tests/ ); 
 do
     for instancia in $(ls tests/$problem);
