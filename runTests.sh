@@ -16,7 +16,7 @@ do
         for tipoBusca in ${tipos[*]};
         do
             echo "./main.py tests/$problem/$instancia $tipoBusca $problem "
-            ./main.py tests/$problem/$instancia $tipoBusca $problem >> $nameFile 
+            ./main.py tests/$problem/$instancia $tipoBusca $problem >> $nameFile &
         done
     done
 done
