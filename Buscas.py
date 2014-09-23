@@ -286,39 +286,50 @@ def buscaProfundidade(p):
         edge = successors+edge
         
     
-    
+
+numNosExplorados = 0
+numNosGerados = 0
+
+
     
 def buscaProfundidadeLimitada(p):
+    global numNosGerados,numNosExplorados
+    numNosExplorados = 0
+    numNosGerados = 1 #counting the rootNode
     limit = 13
-    resultado, node,numNosExplorados,numNosGerados = bplRecursiva(p.rootNode,p,limit)
+    resultado, node = bplRecursiva(p.rootNode,p,limit)
     return node,numNosExplorados,numNosGerados
 
 def buscaProfundidadeIterativa(p):
+    global numNosGerados,numNosExplorados
+    numNosExplorados = 0
+    numNosGerados = 1 #counting the rootNode
     limit = 0
     resultado = 'FALHA'
     while resultado != 'Sucesso':
         if DEBUG:
             print 'limite = ',limit
-        resultado, node,numNosExplorados,numNosGerados = bplRecursiva(p.rootNode,p,limit)
-        numNosGerados+=1 #para contabilizar o nó raiz
+        resultado, node = bplRecursiva(p.rootNode,p,limit)
         limit += 1
+        
     return node,numNosExplorados,numNosGerados
 
 
 
 def bplRecursiva(node,p,limit):
     
-    numNosExplorados = 1
-    numNosGerados = 0
+    global numNosGerados,numNosExplorados
+    numNosExplorados += 1
+    
     #TODO verificar tamanho a serem retornados
     if p.isSolution(node):
         if DEBUG:
             print 'solução encontrada', node
-        return 'Sucesso',node,numNosExplorados,numNosGerados
+        return 'Sucesso',node,
     elif limit == 0:
         if DEBUG:
             print 'limite atingido'
-        return 'CORTE',None,numNosExplorados,numNosGerados
+        return 'CORTE',None
     else:
         corteOcorreu = False
         successors = p.successors(node)
@@ -332,17 +343,15 @@ def bplRecursiva(node,p,limit):
             #print 's = ',s
             if DEBUG:
                 print s
-            resultado,n1,numNosExploradosFilho,numNosGeradosFilho = bplRecursiva(s,p,limit-1)
-            numNosExplorados += numNosExploradosFilho
-            numNosGerados += numNosGeradosFilho
+            resultado,n1 = bplRecursiva(s,p,limit-1)
             if resultado == 'CORTE':
                 corteOcorreu = True
             elif resultado == 'Sucesso':
-                return 'Sucesso',n1,numNosExplorados,numNosGerados
+                return 'Sucesso',n1
         if corteOcorreu:
-            return 'CORTE',None,numNosExplorados,numNosGerados
+            return 'CORTE',None
         else:
-            return 'FALHA',None,numNosExplorados,numNosGerados
+            return 'FALHA',None
             
         
         
@@ -538,9 +547,36 @@ def buscaGulosa(p):
 infinito = float('inf')
 nextLimit = infinito
 
-def buscaIDAStar(p):
+
+
+def DFSContorno(node,p,limit):
     global nextLimit 
-    nextLimit = infinito
+    global numNosGerados,numNosExplorados
+    numNosExplorados+= 1
+    
+    #se nó esta fora do contorno
+    if node.f > limit:
+        #print limit, node.f
+        return None,node.f
+    #se node é solução
+    if p.isSolution(node):
+        return node,limit
+    successors = p.successors(node)
+    numNosGerados += len(successors)
+    for sucessor in successors:
+        solucao, newLimit = DFSContorno(sucessor,p,limit)
+    
+        if solucao != None:
+            return solucao,limit
+        else:
+            if newLimit < nextLimit:
+                #print nextLimit,newLimit
+                nextLimit = newLimit
+            
+    return solucao,nextLimit
+
+
+def buscaIDAStar(p):
     """    
     Função IDA* (problema) devolve a sequência da solução
         Entradas:
@@ -555,51 +591,23 @@ def buscaIDAStar(p):
             Se f-limite = infinito então devolve falha
     """
     
-    numNosExplorados,numNosGerados = 0,1
+    global nextLimit 
+    global numNosGerados,numNosExplorados
+    
+    #initialize counters
+    numNosExplorados = 0
+    numNosGerados = 1 #counting the rootNode
+    
+    #initialize limit
     limit = p.rootNode.f
     node = p.rootNode
-    
-    def DFSContorno(node,p,limit):
-        global nextLimit 
-        numNosExplorados,numNosGerados = 1,0
-        
-        #se nó esta fora do contorno
-        if node.f > limit:
-            #print limit, node.f
-            return None,numNosExplorados,numNosGerados,node.f
-        #se node é solução
-        if p.isSolution(node):
-            return node,numNosExplorados,numNosGerados,limit
-        for sucessor in p.successors(node):
-            numNosGerados += 1
-            solucao, numNosExploradosFilho, numNosGeradosFilho, newLimit = DFSContorno(sucessor,p,limit)
-            numNosExplorados += numNosExploradosFilho
-            numNosGerados += numNosGeradosFilho
-        
-            if solucao != None:
-                #return solucao,numNosExplorados,numNosGerados,newLimit
-                return solucao,numNosExplorados,numNosGerados,limit
-            else:
-                #print nextLimit
-                #if newLimit<nextLimit:
-                    #print nextLimit, newLimit
-                    #nextLimit = newLimit
-                if newLimit < nextLimit:
-                    print nextLimit,newLimit
-                    
-                    nextLimit = newLimit
-                #nextLimit = min(nextLimit,newLimit)
-                
-        #return solucao,numNosExplorados,numNosGerados,newLimit
-        return solucao,numNosExplorados,numNosGerados,nextLimit
-    
     while True:
         print 10*'-=-='
+        #nextLimit recebe o menor valor que ultrapassou o limite atual
+        #so its important to initialize it as infinite before
+        # in the end nextLimit will be the limit of the next call to DFSContorno
         nextLimit = infinito
-        solucao,numNosExploradosFilho,numNosGeradosFilho,limit = DFSContorno(p.rootNode,p,limit)
-        #return
-        numNosExplorados += numNosExploradosFilho
-        numNosGerados += numNosGeradosFilho
+        solucao,limit = DFSContorno(p.rootNode,p,limit)
         if solucao != None:
             return solucao,numNosExplorados,numNosGerados
         
@@ -622,9 +630,9 @@ def busca(p,tipo):
     
     
     if tipo == 'BL':
-        b = BuscaLargura(p)
-        return b.run()
-        #return buscaLargura(p)
+        #b = BuscaLargura(p)
+        #return b.run()
+        return buscaLargura(p)
     elif tipo == 'BP':
         return buscaProfundidade(p)
     elif tipo == 'BPL':
