@@ -550,9 +550,9 @@ def buscaGulosa(p):
     
 # variaveis globais utilizadas pelo método buscaIDAStar
     
-infinito = float('inf')
-nextLimit = infinito
 
+
+infinit = float('inf')
 
 
 def DFSContorno(node,p,limit):
@@ -606,7 +606,6 @@ def buscaIDAStar(p):
     numNosExplorados = 0
     numNosGerados = 1 #counting the rootNode
     
-    
     p.value(p.rootNode)
     #initialize limit
     limit = p.rootNode.f
@@ -615,17 +614,55 @@ def buscaIDAStar(p):
         #nextLimit recebe o menor valor que ultrapassou o limite atual
         #so its important to initialize it as infinite before
         # in the end nextLimit will be the limit of the next call to DFSContorno
-        nextLimit = infinito
-        solucao,limit = DFSContorno(p.rootNode,p,limit)
-        if solucao != None:
-            return solucao,numNosExplorados,numNosGerados
+        nextLimit = infinit
+        result,limit = DFSContorno(p.rootNode,p,limit)
+        if result != None:
+            return result,numNosExplorados,numNosGerados
         
 
-    
 def buscaRBFS(p):
-    raise NotImplementedError
+    global nextLimit 
+    global numNosGerados,numNosExplorados
+    #initialize counters
+    numNosExplorados = 0
+    numNosGerados = 1 #counting the rootNode
+    
+    p.value(p.rootNode)
+    result,limit = RBFS(p.rootNode,p,infinit)
+    if result != None:
+        return result,numNosExplorados,numNosGerados 
         
-        
+
+def RBFS (node,p, limit):
+    """
+    retorna solução ou falha e um novo limite f-custo
+    """
+    global numNosGerados,numNosExplorados
+    numNosExplorados+=1
+    if p.isSolution(node):
+        return node, node.f
+    successors = p.successors(node)
+    if successors == []:
+        return None, infinit
+    numNosGerados+=len(successors)
+    for s in successors:
+        p.value(s)
+        s.f = max(s.f, node.f)
+
+    while True:
+        #order successors according to f
+        successors = sorted(successors, key=lambda s: s.f)
+        melhor = successors[0]
+        if melhor.f > limit:
+            return None, melhor.f
+        if len(successors)>1:
+            alternativa = successors[1].f
+        else:
+            alternativa = infinit
+        result, melhor.f = RBFS(melhor,p, min(limit, alternativa))
+        if result != None:
+            return result, node.f
+
         
 
 def busca(p,tipo):
