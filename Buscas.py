@@ -22,7 +22,7 @@ class Node:
     
     def getPath(self):
         '''
-            Retorna os filhos lista de nós desde a raiz ate a folha atual
+            Retorna lista de nós desde a raiz ate a folha atual
         '''
         node = self
         path = []
