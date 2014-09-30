@@ -130,10 +130,10 @@ class ReguaPuzzle(Problem):
         estado = node.estado['left']+node.estado['right']
         
         #h1: numero de python
-        #node.h = estado[0:self.size].count('A')
+        #h = estado[0:self.size].count('A')
         
         #h2: As a esquerda do branco
-        #node.h = node.estado['left'].count('A') + node.estado['right'].count('B') 
+        #h = node.estado['left'].count('A') + node.estado['right'].count('B') 
         
         #h3: somatori num As a esquerda de cada B
         
@@ -144,6 +144,8 @@ class ReguaPuzzle(Problem):
                 s-=1
             else:
                 h += s
+                
+                
         node.h =  h
         node.f = h+node.cost
     

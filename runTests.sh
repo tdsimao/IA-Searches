@@ -1,6 +1,6 @@
 #!/bin/bash
 # declare STRING variable
-nameFile=out/$(date +%y-%m-%d_%H:%M).csv
+nameFile=out/RPHeuristica3.csv
 #print variable on a screen
 mkdir out/
 echo saida salva em $nameFile
