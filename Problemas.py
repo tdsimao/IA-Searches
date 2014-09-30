@@ -188,9 +188,6 @@ class TravessiaPonte(Problem):
         #h3
         
         h = 0
-        
-                
-                
         if node.estado['west']:
             l = list(node.estado['west'])
             l2 = sorted(list(node.estado['east']+l))

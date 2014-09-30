@@ -6,6 +6,7 @@ mkdir out/
 echo saida salva em $nameFile
 # bash for loop
 tipos=(BL BP BPL BPI BCU A* IDA* RBFS)
+tipos=(A* IDA* RBFS)
 #echo "Array size: ${#array[*]}"
 echo "Tipo de Busca, Achou, Profundidade, Custo, Nós Explorados, Nós Gerados, Fator de Ramificação, Tempo (s), Entrada" > $nameFile 
 for problem in $( ls tests/ ); 
