@@ -1,9 +1,10 @@
 # -*- coding: latin-1 -*-
 
 import itertools
+import heapq
 
-from heapq import heappop,heappush,heapify
-from heapq import merge as heapmerge
+#from heapq import heappop,heappush,heapify
+#from heapq import merge as heapmerge
 
 DEBUG = False
 
@@ -47,6 +48,56 @@ class Node:
     
     def __repr__(self):
         return str(self.estado)
+
+
+
+
+
+class MyHeap(object):
+    def __init__(self, initial=None, key=lambda x:x):
+       self.key = key
+       if initial:
+           self._dataHeap = [(key(item), item) for item in initial]
+           heapq.heapify(self._dataHeap)
+           self._dataSet = set(initial)
+       else:
+           self._dataHeap = []
+           self._dataSet = set()
+           
+    def push(self, item):
+        if item not in self._dataSet:
+            heapq.heappush(self._dataHeap, (self.key(item), item))
+            self._dataSet.add(item)
+        else:
+            """
+                if item in _dataSet, 
+                check if key(item) < key(_dataSet.(item))
+            """
+            aux = set()
+            aux.add(item)
+            oldItem = aux.intersection(self._dataSet).pop() 
+            
+            if item.cost<oldItem.cost:
+                #remove oldItem from heap
+                self._dataHeap = list(self._dataHeap)
+                self._dataHeap.remove((self.key(oldItem), oldItem))
+                #sort heap 
+                heapq.heapify(self._dataHeap)
+                
+                self._dataSet.remove(oldItem)
+                
+                #add new element
+                heapq.heappush(self._dataHeap, (self.key(item), item))
+                self._dataSet.add(item)
+                
+    def __len__(self):
+        return len(self._dataSet)
+
+    def pop(self):
+        item = heapq.heappop(self._dataHeap)[1]
+        self._dataSet.remove(item)
+        return item
+    
 
 
 
@@ -380,8 +431,70 @@ def addABorda(successors,edge,explored):
 
 
     
+
+    
     
 def buscaCustoUniforme(p):
+    '''retorna solução ou falha(None)'''
+    edge = MyHeap(key=lambda x:x.cost)
+    edge.push(p.rootNode)
+    explored = set()
+    if p.isSolution(p.rootNode):
+        return p.rootNode,1,1
+    while True:
+        #se edge (borda) vazia não há resposta
+        if not edge:
+            return None,len(explored),len(explored)+len(edge)
+        #
+        node = edge.pop() #remove e retorna o primeiro no da borda
+        if DEBUG:
+            print node
+        explored.add(node)
+        successors = p.successors(node)
+        for s in successors:
+            #verifica se algum dos nós gerados é solução
+            if p.isSolution(s):
+                return s,len(explored),len(explored)+len(edge)
+            
+            if s not in explored:
+                edge.push(s)
+        
+        
+        # implementação da ordem de prioridade
+        # insere novos sucessores de forma ordenada segundo custo em edge
+        
+        if DEBUG:
+            print 'Edge Anterior:'
+            for s in edge:
+                print s,s.cost
+            print
+            
+            print 'Sucessores não ordenados:'
+            for s in successors:
+                print s,s.cost
+            print
+        
+        #reordena borda
+        #edge = sorted(edge, key=lambda n: n.cost)
+        
+        if DEBUG:
+            print 'Sucessores ordenados:'
+            for s in successors:
+                print s,s.cost
+            print 'Edge posterior:'
+            for s in edge:
+                print s,s.cost
+            print
+            print 20*'-_'
+            print
+        
+        
+        #expandir o nó escolhido, adicionando os nós resultantes a borda
+        #apenas se não estiver na borda ou no conjunto explorado
+    
+           
+    
+def buscaCustoUniforme2(p):
     '''retorna solução ou falha(None)'''
     edge = []
     edge.append(p.rootNode)
@@ -444,6 +557,57 @@ def buscaCustoUniforme(p):
 def buscaAStar(p):
     '''retorna solução ou falha(None)'''
     p.value(p.rootNode)
+    edge = MyHeap(key=lambda x:x.cost)
+    edge.push(p.rootNode)
+    explored = set()
+    if p.isSolution(p.rootNode):
+        return p.rootNode,1,1
+    while True:
+        #se edge (borda) vazia não há resposta
+        if not edge:
+            return None,len(explored),len(explored)+len(edge)
+        #
+        node = edge.pop() #remove e retorna o primeiro no da borda
+        
+        
+        if DEBUG:
+            print node
+        
+        
+        explored.add(node)
+        
+        
+        if p.isSolution(node):
+            return node,len(explored),len(explored)+len(edge)
+        
+        #print
+        #print node.cost, node.f, node
+        
+        successors = p.successors(node)
+        for s in successors:
+            p.value(s)
+            if s not in explored:
+                edge.push(s)
+        
+        
+        #edge += successors
+        if DEBUG:
+            print 'Edge posterior:'
+            for s in edge:
+                print s,s.h
+            print
+            print 20*'-_'
+            print
+            
+        
+        #expandir o nó escolhido, adicionando os nós resultantes a borda
+        #apenas se não estiver na borda ou no conjunto explorado
+    
+           
+    
+def buscaAStar2(p):
+    '''retorna solução ou falha(None)'''
+    p.value(p.rootNode)
     edge = []
     edge.append(p.rootNode)
     explored = set()
@@ -490,8 +654,6 @@ def buscaAStar(p):
         
         #expandir o nó escolhido, adicionando os nós resultantes a borda
         #apenas se não estiver na borda ou no conjunto explorado
-    
-           
     
     
 def buscaGulosa(p):
