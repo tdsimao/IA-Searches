@@ -730,8 +730,11 @@ def DFSContorno(node,p,limit):
     if p.isSolution(node):
         return node,limit
     successors = p.successors(node)
+    
     for s in successors:
         p.value(s)
+        
+    successors = sorted(successors, key=lambda x: x.f)
     numNosGerados += len(successors)
     for sucessor in successors:
         solucao, newLimit = DFSContorno(sucessor,p,limit)
