@@ -557,7 +557,7 @@ def buscaCustoUniforme2(p):
 def buscaAStar(p):
     '''retorna solução ou falha(None)'''
     p.value(p.rootNode)
-    edge = MyHeap(key=lambda x:x.cost)
+    edge = MyHeap(key=lambda x:x.f)
     edge.push(p.rootNode)
     explored = set()
     if p.isSolution(p.rootNode):
