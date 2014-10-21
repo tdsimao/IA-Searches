@@ -73,10 +73,21 @@ def main():
             problemas.append(p)
         except ValueError as e:
             print e
+    elif tipoProblema == 'FP':
+        
+        i = FindPathProblem.loadInstance(fileName)
+        
+        try:
+            p = FindPathProblem(i['worldmap'],i['intialPosition'],i['goalPosistion'])
+            #save input to be show in the out
+            p.input = i
+            problemas.append(p)
+        except ValueError as e:
+            print e
             
     
     #gambiarra para pegar dois elementos do iterador em cada loop
-    inputIterator = content.__iter__()
+    #inputIterator = content.__iter__()
     
     
     for problema in problemas:
@@ -118,6 +129,7 @@ def main():
                 print ',"',str(value),'"',
             #pula linha
             print
+        print node.getPath()
             
         ##
         # SALVAR SOLUÇÕES DIRETÓRIO OUT

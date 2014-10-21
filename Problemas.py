@@ -4,12 +4,13 @@ from Buscas import Node
 
 from itertools import combinations
 
-class Problem:
+class Problem(object):
     def __init__(self):
         self.rootNode  = Node()
+        self.goalNode = Node()
 
     def isSolution(self,node):
-        raise NotImplementedError
+        return node == self.goalNode
 
     def successors(self,node):
         '''
@@ -34,6 +35,7 @@ class Problem:
     def value(self,node):
         '''
             Deve retornar uma estimativa da distância do nó para um estado meta
+            Must calculate 
         '''
         raise NotImplementedError
     
@@ -47,7 +49,21 @@ class Problem:
         for node in path:
             self.printNode(node)
             
-            
+    @staticmethod
+    def loadInstance(f):
+        '''
+            return an instance of the problem from f
+
+            f is the path to the problem
+        '''
+        raise NotImplementedError
+    
+    def createInstance(self, option = None):
+        '''
+            return an random instance of the problem
+            maybe use some options
+        '''
+        raise NotImplementedError
         
     
 
@@ -151,8 +167,6 @@ class ReguaPuzzle(Problem):
     
         
         
-
-    
     
 
 class TravessiaPonte(Problem):
@@ -296,3 +310,90 @@ class TravessiaPonte(Problem):
 #        return (len(node.estado['west']) == 0) and node.cost <= self.maxCost
         return (len(node.estado['west']) == 0)
 
+
+
+
+class FindPathProblem(Problem):
+
+    def __init__(self, worldmap, intialPosition, goalPosistion):
+        Problem.__init__(self)
+        self.worldmap = worldmap
+        self.rootNode.estado = intialPosition
+        self.goalNode.estado = goalPosistion
+        self.value(self.rootNode)
+        self.max_x = len(worldmap)
+        self.max_y = len(worldmap[0])
+    
+    def actions(self,node):
+        '''
+            Deve retornar as possíveis ações aplicáveis a um nó
+        '''
+        (x,y) = node.estado
+        
+        actions = []
+        possible_actions = [(-1,-1),(-1,0),(-1,1),(0,-1),(0,1),(1,-1),(1,0),(1,1)]
+        for (aX,aY) in possible_actions:
+            if not ( x+aX <  0 or x+aX >=self.max_x or  y+aY <  0 or y+aY >=self.max_y):
+                if not self.worldmap[x+aX][y+aY]:
+                    actions.append((aX,aY))
+                
+        return actions
+    
+    def value(self,node):
+        '''
+            Deve retornar uma estimativa da distância do nó para um estado meta
+        '''
+        (x,y) = node.estado
+        (gX,gY) = self.goalNode.estado
+        h = ((x - gX)**2 + (y - gY)**2)**0.5
+        
+        node.h =  h
+        node.f = h + node.cost
+        
+    def child(self,node,action):
+        '''
+            Retornar um filho aplicando a ação no estado atual do nó
+        '''
+        (x,y) = action
+        estadoFilho = (node.estado[0] + x,node.estado[1] + y)
+        c = (x**2 + y**2)**0.5
+        #print c
+        son = Node(parent = node, cost = node.cost+c, action = action, estado = estadoFilho)
+        self.value(son)
+        return son
+        
+    
+    @staticmethod
+    def loadInstance(f):
+        '''
+            return an instance of the problem from f
+
+            f is the path to the problem
+        '''
+        
+        content = [x.strip('\n') for x in open(f, 'r').readlines()] 
+        i ={}
+        
+        aux = content[0].split(' ')
+        i['intialPosition'] = tuple([int(e) for e in aux])
+        aux = content[1].split(' ')
+        i['goalPosistion'] = tuple([int(e) for e in aux])
+
+        i['worldmap'] = []
+        for l in content[2::]:
+            aux = l.split(' ')
+            i['worldmap'].append([int(e) for e in aux])
+        return i
+    
+    
+    def createInstance(self, option = None):
+        '''
+            return an random instance of the problem
+            maybe use some options
+        '''
+        raise NotImplementedError
+        
+    
+
+    
+    
