@@ -75,7 +75,21 @@ def main():
             print e
     elif tipoProblema == 'FP':
         
-        i = FindPathProblem.loadInstance(fileName)
+        
+        for j in range(50,60):
+            
+            i = FindPathProblem.createInstance(j)
+            start = time.clock()
+            p = FindPathProblem(i['worldmap'],i['intialPosition'],i['goalPosistion'])
+            node,numNosExplorados,numNosGerados = busca(p,tipoBusca)
+            end = time.clock()
+            print j,end - start
+            
+        return
+        #i = FindPathProblem.loadInstance(fileName)
+        i = FindPathProblem.createInstance(30)
+
+        
         
         try:
             p = FindPathProblem(i['worldmap'],i['intialPosition'],i['goalPosistion'])

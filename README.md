@@ -1,6 +1,6 @@
 # Search
 
-This project aims to create a lybrary of searches
+This project aims to create a library of search methods
 
 ## How To
 

@@ -386,14 +386,28 @@ class FindPathProblem(Problem):
         return i
     
     
-    def createInstance(self, option = None):
+    @staticmethod
+    def createInstance(size ):
         '''
             return an random instance of the problem
             maybe use some options
         '''
-        raise NotImplementedError
+        worldmap = []
+        for i in range(size):
+            l = []
+            for j in range(size):
+                l.append(0)
+            worldmap.append(l)
         
-    
+        for i in range(1, size-1):
+            worldmap[i][size/2] = 1
+        i = {}
+        i['intialPosition'] = [size/2,0]
+        i['goalPosistion'] =  (size/2,size-1)
+        i['worldmap'] = worldmap
+        return i
 
-    
-    
+
+
+
+
