@@ -409,32 +409,6 @@ def bplRecursiva(node,p,limit):
             return 'FALHA',None
             
         
-        
-def addABorda(successors,edge,explored):
-    """
-        adiciona nos a borda
-    """
-    for s in successors:
-        if s not in edge:
-            if s not in explored:
-                edge.append(s)
-        else:
-            aux = set()
-            aux.add(s)
-            b = aux.intersection(edge).pop() 
-            if s.cost < b.cost:
-                #print s, s.cost
-                #print b, b.cost
-                #print 
-                edge.remove(b)
-                edge.append(s)
-            
-            #if s.cost < (list(explored)+edge).getitem(s):
-                #print 'Teste'
-
-    
-
-    
     
 def buscaCustoUniforme(p):
     '''retorna solução ou falha(None)'''
@@ -452,8 +426,7 @@ def buscaCustoUniforme(p):
         if DEBUG:
             print node
         explored.add(node)
-        successors = p.successors(node)
-        for s in successors:
+        for s in p.successors(node):
             #verifica se algum dos nós gerados é solução
             if p.isSolution(s):
                 return s,len(explored),len(explored)+len(edge)
@@ -507,25 +480,27 @@ def buscaAStar(p):
     if p.isSolution(p.rootNode):
         return p.rootNode,1,1
     while True:
+        
         #se edge (borda) vazia não há resposta
         if not edge:
             return None,len(explored),len(explored)+len(edge)
-        node = edge.pop() #remove e retorna o primeiro no da borda
+        
+        # remove e retorna o primeiro no da borda
+        node = edge.pop() 
         explored.add(node)
         if p.isSolution(node):
             return node,len(explored),len(explored)+len(edge)
-        successors = p.successors(node)
-        for s in successors:
+        
+        for s in p.successors(node):
+        #for s in p.successorsGenerator(node):
             p.value(s)
             edge.push(s)
-        
-           
     
 def buscaGulosa(p):
     '''retorna solução ou falha(None)'''
     p.value(p.rootNode)
-    edge = []
-    edge.append(p.rootNode)
+    edge = MyHeap(key=lambda x:x.h)
+    edge.push(p.rootNode)
     explored = set()
     if p.isSolution(p.rootNode):
         return p.rootNode,1,1
@@ -534,46 +509,21 @@ def buscaGulosa(p):
         if not edge:
             return None,len(explored),len(explored)+len(edge)
         #
-        node = edge.pop(0) #remove e retorna o primeiro no da borda
+        node = edge.pop() #remove e retorna o primeiro no da borda
         if DEBUG:
             print node,'\t',node.h,'\t',node.f
         explored.add(node)
         successors = p.successors(node)
         
         for s in successors:
-            p.value(s)
-        
-        addABorda(successors,edge,explored)
-        
-        ##remove de sucessores os nós ja explorados
-        #successors = diff(successors,explored) 
-        ##remove de sucessores os nós da borda
-        #successors = diff(successors,edge) 
-        
-        
-        #verifica se algum dos nós gerados é solução
-        for s in successors:
             if p.isSolution(s):
                 return s,len(explored),len(explored)+len(edge)
-        
-        # implementação da ordem de prioridade
-        # insere novos sucessores de forma ordenada segundo custo em edge
-        
-        successors = sorted(successors, key=lambda s: s.h)
-        
-        edge = sorted(itertools.chain(edge,successors), key=lambda n: n.h)
-        
-        #print 'Edge posterior:'
-        #for s in edge:
-            #print s,s.h
-        #print
-        #print 20*'-_'
-        #print
+            p.value(s)
+            if s not in explored:
+                edge.push(s)
+                
         
         
-        #expandir o nó escolhido, adicionando os nós resultantes a borda
-        #apenas se não estiver na borda ou no conjunto explorado
-    
     
 # variaveis globais utilizadas pelo método buscaIDAStar
 infinit = float('inf')

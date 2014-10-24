@@ -76,14 +76,14 @@ def main():
     elif tipoProblema == 'FP':
         
         
-        for j in range(50,60):
+        j = 40
             
-            i = FindPathProblem.createInstance(j)
-            start = time.clock()
-            p = FindPathProblem(i['worldmap'],i['intialPosition'],i['goalPosistion'])
-            node,numNosExplorados,numNosGerados = busca(p,tipoBusca)
-            end = time.clock()
-            print j,end - start
+        i = FindPathProblem.createInstance(j)
+        start = time.clock()
+        p = FindPathProblem(i['worldmap'],i['intialPosition'],i['goalPosistion'])
+        node,numNosExplorados,numNosGerados = busca(p,tipoBusca)
+        end = time.clock()
+        print j,end - start
             
         return
         #i = FindPathProblem.loadInstance(fileName)

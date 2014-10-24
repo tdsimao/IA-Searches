@@ -10,7 +10,17 @@ class Problem(object):
         self.goalNode = Node()
 
     def isSolution(self,node):
+        
         return node == self.goalNode
+
+    
+    def successorsGenerator(self,node):
+        for a in self.actions(node):
+            s = self.child(node,a)
+            if s:
+                yield s
+        
+        
 
     def successors(self,node):
         '''
@@ -393,13 +403,13 @@ class FindPathProblem(Problem):
             maybe use some options
         '''
         worldmap = []
-        for i in range(size):
+        for i in xrange(size):
             l = []
-            for j in range(size):
+            for j in xrange(size):
                 l.append(0)
             worldmap.append(l)
         
-        for i in range(1, size-1):
+        for i in xrange(1, size-1):
             worldmap[i][size/2] = 1
         i = {}
         i['intialPosition'] = [size/2,0]
