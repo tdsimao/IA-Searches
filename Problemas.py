@@ -3,6 +3,7 @@
 from Buscas import Node
 
 from itertools import combinations
+import pickle
 
 class Problem(object):
     def __init__(self):
@@ -421,3 +422,90 @@ class FindPathProblem(Problem):
 
 
 
+
+    
+
+class MissionariesCannibals(Problem):
+    
+    def __init__(self, size, input):
+        '''
+            Recebe a entrada na forma de texto e quebra a mesma
+            input = None
+        '''
+        Problem.__init__(self)
+        self.size = size
+        self.rootNode.estado = {'left':{'M':3,'C':3}
+                               ,'right':{'M':0,'C':0}
+                               , 'boat' : 'left'}
+        self.input = self.rootNode.estado
+        
+        self.value(self.rootNode)
+        
+    def isSolution(self,node):
+        return node.estado == {'left':{'M':0,'C':0}
+                               ,'right':{'M':3,'C':3}
+                               , 'boat' : 'right'}
+        
+        
+    def actions(self,node):
+        '''
+            Retorna as  possíveis ações aplicando a um nó na ordem:
+        '''
+        actions = []
+        boat = node.estado['boat']
+        for i in range(node.estado[boat]['C']+1):
+            for j in range(node.estado[boat]['M']+1):
+                if (i + j > 0) and (i + j < 3):
+                    actions.append({'C':i,'M':j})
+        return actions
+        
+    
+    
+    def child(self,node,action):
+        '''
+            Deve retornar um filho aplicando a ação no estado atual do nó
+            ação = (lado,tamanho)
+        '''
+        estadoFilho = {}
+        side1 = node.estado['boat']
+        if node.estado['boat'] == 'left':
+            estadoFilho['boat'] = 'right'
+            side2 = 'right'
+        else:
+            estadoFilho['boat'] = 'left'
+            side2 = 'left'
+            
+            
+        
+        estadoFilho[side1] =  { 'M' : node.estado[side1]['M'] - action['M'], 'C' : node.estado[side1]['C'] - action['C'] }
+        estadoFilho[side2] = { 'M' : node.estado[side2]['M'] + action['M'], 'C' : node.estado[side2]['C'] + action['C'] }
+        
+        
+        
+        if (estadoFilho[side1]['M'] >= estadoFilho[side1]['C'] or estadoFilho[side1]['M'] == 0) and (estadoFilho[side2]['M'] >= estadoFilho[side2]['C'] or estadoFilho[side2]['M'] == 0 ):
+            son = Node(parent = node, cost = node.cost+1, action = action, estado = estadoFilho)
+            self.value(son)
+            return son
+        else:
+            return None
+    
+    
+    def printNode(self,node):
+        print str(node.estado),node.h,node.cost,node.h+node.cost
+        
+    def value(self,node):
+        '''
+            Calcula uma estimativa da distância do nó para um estado meta h
+            Adiciona os seguites atributos ao nó:
+                h: função heurisitca que estima a distancia para o nó Objetivo
+                f = h+cost
+        '''
+        
+        h = node.estado['left']['M']+node.estado['left']['C']
+        h = float(h)/2
+        
+        node.h =  h
+        node.f = h+node.cost
+    
+        
+        

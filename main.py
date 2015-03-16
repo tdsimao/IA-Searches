@@ -6,12 +6,12 @@ from Problemas import *
 from Buscas import busca
 
 TIPOS_BUSCAS = ['BL', 'BP', 'BPL', 'BPI', 'BCU', 'A*', 'IDA*','RBFS']
-TIPOS_PROBLEMAS = ['RP','TP']
+TIPOS_PROBLEMAS = ['RP','TP','MC']
 DEBUG = False
 
     
 
-TEST = True
+TEST = False
     
 def main():
     try:
@@ -98,7 +98,11 @@ def main():
             problemas.append(p)
         except ValueError as e:
             print e
-            
+    if tipoProblema == 'MC': 
+        p = MissionariesCannibals(3,fileName)
+        #save input to be show in the out
+        #p.input = i
+        problemas.append(p)
     
     #gambiarra para pegar dois elementos do iterador em cada loop
     #inputIterator = content.__iter__()
